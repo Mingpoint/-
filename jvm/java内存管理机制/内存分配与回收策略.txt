@@ -1,0 +1,5 @@
+1.对象优先在Eden区中分配
+2.大对象直接进入老年代,可以通过-XX:PretenureSizeThreshold=3145728来设置
+3.长期存活的对象进入老年代,可以通过-XX:MaxTenuringThreshod=1来设置
+
+

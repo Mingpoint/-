@@ -1,0 +1,4 @@
+字节码与数据类型: 大多数的指令都包含了其操作所对应的数据类型，例如：iload指令代表把局部变量表中加载int的数据到操作数栈中。
+
+l代表long，s代表short，b代表byte，c代表char，f代表float，d代表double，a代表reference(引用类型)
+

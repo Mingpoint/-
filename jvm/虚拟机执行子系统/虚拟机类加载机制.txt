@@ -1,0 +1,7 @@
+虚拟机中严格规定有且只有5种情况必须立即对类初始化：
+1）.遇到new,getstatic,putstatic,invokestatic这四个指令时，如果类没有初始化，这必须先初始化类
+2）.使用java.lang.reflect包的方法对类进行反射调用的时候，如果类没有初始化，这必须先初始化类
+3）.初始化类的时候，父类没有初始化，先初始化父类
+4）.当虚拟机启动时，用户需要指定一个要执行的主类(包含main方法的那个类)，虚拟机会先初始化这个类
+5）.在jdk1.7，如果java.lang.invoke.MethodHandle实例最后的解析结果REF_getStatic,REF_putStatic,REF_invokeStatic时，
+需要先初始化该类
