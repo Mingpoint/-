@@ -8,7 +8,7 @@
 
 首先看AnnotationAwareAspectJAutoProxyCreator 类图：
 
-![alt](F:\myGit\notes\imgs\AnnotationAwareAspectJAutoProxyCreator.png)
+![alt](imgs/AnnotationAwareAspectJAutoProxyCreator.png)
 
 
 
