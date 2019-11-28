@@ -1,0 +1,48 @@
+1.交换机：
+    1.1 广播模式（发布/订阅）,
+        1.1.1 生产者需要声明交换机 channel.exchangeDeclare(EXCHANGE_NAME,"fanout");
+        1.1.2 消费者需要交换机与队列绑定 channel.queueBind(queueName,EXCHANGE_NAME,"");,消费者可以单独声明队列，
+              也可以让MQ生成临时队列， 一个交换机可以绑定多个队列。
+    1.2 直连交换机（Direct exchange）
+        路由的算法很简单 —— 交换机将会对绑定键（binding key，其实就是交换机名称）和路由键（routing key）进行精确匹配，
+        从而确定消息该分发到哪个队列，多个队列使用相同的绑定键是合法的
+    1.3 主题交换机（topic exchange）
+
+2.消息确认：
+    2.1 生成者消息确认：
+        2.1.1 mq事务模式
+            channel.txSelect();//开启事务
+            channel.basicPublish(EXCHANGE_NAME, "", null, message.getBytes("UTF-8"));//发送消息
+            channel.txCommit();//提交事务
+        2.1.2 confirm模式
+            1.串行confirm模式：peoducer每发送一条消息后，调用waitForConfirms()方法，等待broker端confirm
+                channel.confirmSelect();//开启confirm模式
+                channel.basicPublish(EXCHANGE_NAME, "", null, message.getBytes("UTF-8"));
+                //判断
+                if (channel.waitForConfirms() ) {
+                        doSomething();
+                }
+            2.批量confirm模式：producer每发送一批消息后，调用waitForConfirms()方法，等待broker端confirm。
+                channel.confirmSelect();//开启confirm模式
+                for (int i = 0; i < 10; i++) {
+                    message += i;
+                    channel.basicPublish(EXCHANGE_NAME, "", null, message.getBytes("UTF-8"));
+                }
+                //判断
+                if (channel.waitForConfirms() ) {
+                    doSomething();
+                }
+            3.异步confirm模式：提供一个回调方法，broker confirm了一条或者多条消息后producer端会回调这个方法。
+                channel.confirmSelect();//开启confirm模式
+                //添加监听器
+                channel.addConfirmListener(new ConfirmListener() {
+                    @Override
+                    public void handleAck(long deliveryTag, boolean multiple) throws IOException {
+                        System.out.println("ack:deliveryTag:"+deliveryTag+"，multiple:"+multiple);
+                    }
+                    @Override
+                    public void handleNack(long deliveryTag, boolean multiple) throws IOException {
+                        System.out.println("nack:deliveryTag:"+deliveryTag+"，multiple:"+multiple);
+                    }
+                });
+                channel.basicPublish(EXCHANGE_NAME, "", null, message.getBytes("UTF-8"));
