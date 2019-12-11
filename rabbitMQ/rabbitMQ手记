@@ -46,3 +46,10 @@
                     }
                 });
                 channel.basicPublish(EXCHANGE_NAME, "", null, message.getBytes("UTF-8"));
+    2.2 消费者消费消息确认
+            2.2.1 consumer自动向broker发送ack
+                //设置为true，consumer自动向broker发送ack,只要收到了消息就像broker发送ack
+                channel.basicConsume(queueName, true, consumer);
+            2.2.2 consumer手动向broker发送ack
+                //consumer手动向broker发送ack,收到消息不自动向向broker发送ack，必须手动发送，确保处理消费正确
+                channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
