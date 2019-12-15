@@ -1,0 +1,27 @@
+如何查看一个正在运行的java程序，他的某个参数是否开启
+
+1.
+    jps
+    jinfo -flag 具体参数 Java进程号
+    jinfo -flags        Java进程号
+2.
+    java -XX:+PrintFlagsInitial //查看初始值
+    java -XX:+PrintFlagsFinal //查看修改过的值
+    java -XX:+PrintCommandLineFlags //查看GC回收器
+
+-Xms 初始化内存大小，默认为机器物理内存1/64 等价于 -XX:InitialHeapSize
+-Xmx 最大内存大小，  默认为机器物理内存1/4  等价于 -XX:MaxHeapSize
+
+-Xss 线程栈的大小，   等价于 -XX:ThreadStackSize
+
+
+
+GC 参数约定：
+    DefNew      -->  Default New Generation
+    Tenured     --> Old
+    ParNew      --> Parallel New Generation
+    PSYoung     --> Parallel Scavenge
+    ParOldGen   --> Parallel Old Generation
+
+
+
