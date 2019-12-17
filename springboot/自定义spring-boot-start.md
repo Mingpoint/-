@@ -14,7 +14,7 @@
 3、自动配置类要能加载，需要将启动的自动配置类，配置在META-INF/srping.factories
 
 ```xml
-org.springframework.context.ApplicationListener=\org.springframework.boot.autoconfigure.BackgroundPreinitializer
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\org.springframework.boot.autoconfigure.BackgroundPreinitializer
 ```
 
 4、模式
