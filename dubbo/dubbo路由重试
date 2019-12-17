@@ -1,0 +1,4 @@
+1.重试机制：
+    DefaultFuture.get(timeOut)
+    1.不断轮询，通过Condition.await(timeOut)等待超时，重试
+    2.开启一个名为DubboResponseTimeoutScanTimer守护线程不断扫描是否接受到消息，收到Condition.signal唤醒线程
