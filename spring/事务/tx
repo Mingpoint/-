@@ -1,0 +1,33 @@
+一、特性
+先来了解一下@Transactional注解事务的特性吧，可以更好排查问题
+1、service类标签(一般不建议在接口上)上添加@Transactional，可以将整个类纳入spring事务管理，在每个业务方法执行时都会开启一个事务，
+不过这些事务采用相同的管理方式。
+2、@Transactional 注解只能应用到 public 可见度的方法上。 如果应用在protected、private或者 package可见度的方法上，也不会报错，
+不过事务设置不会起作用。
+3、默认情况下，Spring会对unchecked异常进行事务回滚；如果是checked异常则不回滚。
+辣么什么是checked异常，什么是unchecked异常
+java里面将派生于Error或者RuntimeException（比如空指针，1/0）的异常称为unchecked异常，其他继承自java.lang.Exception得异常
+统称为Checked Exception，如IOException、TimeoutException等
+辣么再通俗一点：你写代码出现的空指针等异常，会被回滚，文件读写，网络出问题，spring就没法回滚了。然后我教大家怎么记这个，
+因为很多同学容易弄混，你写代码的时候有些IOException我们的编译器是能够检测到的，说以叫checked异常，
+你写代码的时候空指针等死检测不到的，所以叫unchecked异常。这样是不是好记一些啦
+
+4、只读事务：
+@Transactional(propagation=Propagation.NOT_SUPPORTED,readOnly=true)
+只读标志只在事务启动时应用，否则即使配置也会被忽略。
+启动事务会增加线程开销，数据库因共享读取而锁定(具体跟数据库类型和事务隔离级别有关)。通常情况下，仅是读取数据时，
+不必设置只读事务而增加额外的系统开销。
+
+1、检查你方法是不是public的
+
+2、你的异常类型是不是unchecked异常
+如果我想check异常也想回滚怎么办，注解上面写明异常类型即可
+    @Transactional(rollbackFor=Exception.class)
+类似的还有norollbackFor，自定义不回滚的异常
+3、数据库引擎要支持事务，如果是MySQL，注意表要使用支持事务的引擎，比如innodb，如果是myisam，事务是不起作用的
+4、是否开启了对注解的解析
+<tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/>
+5、spring是否扫描到你这个包，如下是扫描到org.test下面的包
+<context:component-scan base-package="org.test" ></context:component-scan>
+6、检查是不是同一个类中的方法调用（如a方法调用同一个类中的b方法）
+7、异常是不是被你catch住了
