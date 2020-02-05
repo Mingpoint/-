@@ -1,0 +1,14 @@
+1.mysql 中锁被分成表锁和行级锁
+    表锁：
+    行级锁：分为共享锁（读锁），排他锁（写锁）
+        mysql InnoDB引擎默认的修改数据语句，update,delete,insert都会自动给涉及到的数据加上排他锁
+        select语句默认不会加任何锁类型，如果加排他锁可以使用select ...for update语句，
+        加共享锁可以使用select ... lock in share mode语句。所以加过排他锁的数据行在其他事务种是不能修改数据的，
+        也不能通过for update和lock in share mode锁的方式查询数据，但可以直接通过select ...from...查询数据，
+        因为普通查询没有任何锁机制。
+        一个事务获取了共享锁，在其他查询中也只能加共享锁或不加锁；
+
+InnoDB的行锁是针对索引加的锁，不是针对记录加的锁。并且该索引不能失效，否则都会从行锁升级为表锁
+
+行锁，表锁机制：
+https://blog.csdn.net/xts5701046/article/details/81395958
