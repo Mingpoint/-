@@ -1,0 +1,12 @@
+jps: jvm process status tool
+功能:列出正在运行的虚拟机进程
+jstat:jvm Statistics-Monitoring Tool
+功能:用于监控虚拟机各种运行状态信息的命令行工具，
+    它可以显示本地或者远程虚拟机中的类装载、内存、垃圾手机器，JIT编译等运行数据
+jinfo:Configuration info for java
+功能:实时查看和调整虚拟机各项参数
+jmap:memory map for java
+功能:用于生成堆快照(heapdump)
+jstack:stack trace for java
+功能:生成虚拟机当前时刻快照
+
