@@ -1,0 +1,10 @@
+问题:
+    服务间请求feign读取流超时
+    异常：feign.RetryableException: Read timed out executing POST xxxx
+问题产生的原因:
+    由于查询的数据量太大了，导致sql较慢，导致feign响应超时
+解决方案：
+1.加大超时时间
+    ribbon.ConnectTimeout=10000
+    ribbon.ReadTimeout20000
+2.mysql加上索引
