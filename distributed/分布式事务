@@ -30,4 +30,4 @@
     缺点：同步阻塞，单点问题，数据不一致
 
 3PC（三阶段提交）
-
+https://blog.csdn.net/gangsijay888/article/details/82383877
