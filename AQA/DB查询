@@ -1,0 +1,6 @@
+//查询最大连接
+show variables like '%max_connections%';
+//查询已使用连接
+show global status like 'Max_used_connections';
+//连接进程
+show processlist;
