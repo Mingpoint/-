@@ -1,2 +1,84 @@
 match：匹配对应的值
 match_phrase:匹配短语
+
+文档:它是指最顶层或者根对象, 这个根对象被序列化成 JSON 并存储到 Elasticsearch 中，指定了唯一 ID，类似mysql中的一条记录
+
+文档元数据:
+    _index
+    文档在哪存放
+    _type
+    文档表示的对象类别
+    _id
+    文档唯一标识
+
+在Elasticsearch 中文档是 不可改变 的，不能修改它们。相反，如果想要更新现有的文档，需要重建索引或者进行替换
+在内部，Elasticsearch 已将旧文档标记为已删除，并增加一个全新的文档。 尽管你不能再对旧版本的文档进行访问，
+但它并不会立即消失。当继续索引更多的数据，Elasticsearch 会在后台清理这些已删除文档。
+
+创建文档
+PUT /website/blog/123   //website-->_index   blog--->_type  123-->_id
+{}
+更新文档
+PUT /website/blog/123
+{} //
+部分更新文档
+POST /website/blog/1/_update
+{
+   "doc" : {
+      "tags" : [ "testing" ],
+      "views": 0
+   }
+}
+从旧文档构建 JSON
+更改该 JSON
+删除旧文档
+索引一个新文档
+
+当我们索引一个文档，怎么确认我们正在创建一个完全新的文档，而不是覆盖现有的呢
+1. PUT /website/blog/123?op_type=create // 存在返回409 Conflict，不存在返回201 Created
+{}
+2. PUT /website/blog/123/_create // 存在返回409 Conflict，不存在返回201 Created
+
+删除文档的语法
+DELETE /website/blog/123
+
+在Elasticsearch 使用乐观锁控制数据的并发
+
+bulk API 允许在单个步骤中进行多次 create 、 index 、 update 或 delete 请求
+    每行一定要以换行符(\n)结尾， 包括最后一行 。这些换行符被用作一个标记，可以有效分隔行。
+    这些行不能包含未转义的换行符，因为他们将会对解析造成干扰。这意味着这个 JSON 不 能使用 pretty 参数打印
+    POST /_bulk
+    { "delete": { "_index": "website", "_type": "blog", "_id": "123" }}\n
+    { "create": { "_index": "website", "_type": "blog", "_id": "123" }}\n
+    { "title":    "My first blog post" }\n
+    { "index":  { "_index": "website", "_type": "blog" }}\n
+    { "title":    "My second blog post" }\n
+    { "update": { "_index": "website", "_type": "blog", "_id": "123", "_retry_on_conflict" : 3} }\n
+    { "doc" : {"title" : "My updated blog post"} }\n
+
+路由
+shard = hash(routing) % number_of_primary_shards
+routing 是一个可变值，默认是文档的 _id ，也可以设置成一个自定义的值
+routing 通过 hash 函数生成一个数字，然后这个数字再除以 number_of_primary_shards （主分片的数量）后得到 余数
+这个分布在 0 到 number_of_primary_shards-1 之间的余数，就是我们所寻求的文档所在分片的位置
+
+consistency
+    consistency，即一致性。在默认设置下，即使仅仅是在试图执行一个_写_操作之前，主分片都会要求 必须要有
+    规定数量(quorum)（或者换种说法，也即必须要有大多数）的分片副本处于活跃可用状态，才会去执行_写_操作(其中分片副本可以是主分片或者副本分片)
+    这是为了避免在发生网络分区故障（network partition）的时候进行_写_操作，进而导致数据不一致。_规定数量_即：
+    int( (primary + number_of_replicas) / 2 ) + 1
+    consistency 参数的值可以设为 one （只要主分片状态 ok 就允许执行_写_操作）,
+    all（必须要主分片和所有副本分片的状态没问题才允许执行_写_操作）, 或 quorum 。默认值为 quorum , 即大多数的分片副本状态没问题就允许执行_写_操作
+    注意，规定数量 的计算公式中 number_of_replicas 指的是在索引设置中的设定副本分片数，
+    而不是指当前处理活动状态的副本分片数。如果你的索引设置中指定了当前索引拥有三个副本分片，那规定数量的计算结果即：
+    int( (primary + 3 replicas) / 2 ) + 1 = 3
+    如果此时你只启动两个节点，那么处于活跃状态的分片副本数量就达不到规定数量，也因此您将无法索引和删除任何文档
+
+映射（Mapping）
+    描述数据在每个字段内如何存储
+分析（Analysis）
+    全文是如何处理使之可以被搜索的
+领域特定查询语言（Query DSL）
+    Elasticsearch 中强大灵活的查询语言
+
+Elasticsearch 中的数据可以概括的分为两类：精确值和全文
